@@ -1,34 +1,37 @@
 package com.example.tasksapplication
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.tasksapplication.models.Task
 import com.example.tasksapplication.models.getTasks
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.example.tasksapplication.repositories.TaskRepository
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
-class TaskViewModel: ViewModel() {
-    private val _tasks = MutableStateFlow(getTasks())
+class TaskViewModel(private val repository: TaskRepository): ViewModel() {
+    private val _tasks = MutableStateFlow(listOf<Task>())
     val tasks: StateFlow<List<Task>> = _tasks.asStateFlow()
 
-    fun toggleDoneState(task: Task) = _tasks.value.find { it.label == task.label }?.let {
-        it.isDone = !it.isDone
-    }
-
-    fun addTask(task: Task){
-        _tasks.update {
-            val list: MutableList<Task> = _tasks.value.toMutableList()
-            list.add(task)
-            list
+    init {
+        // read all tasks from repo
+        viewModelScope.launch { // start a coroutine
+            repository.getAllTasks().collect{taskList ->    // collect the flow
+                if(!taskList.isNullOrEmpty()) {
+                    _tasks.value = taskList
+                }
+            }
         }
     }
 
-    fun deleteTask(task: Task) {
-        _tasks.update {
-            val list: MutableList<Task> = _tasks.value.toMutableList()
-            list.remove(task)
-            list
-        }
+    suspend fun toggleDoneState(task: Task) {
+        repository.update(task)
+    }
+
+    suspend fun addTask(task: Task){
+        repository.add(task)
+    }
+
+    suspend fun deleteTask(task: Task) {
+        repository.delete(task)
     }
 }

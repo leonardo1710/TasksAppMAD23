@@ -14,7 +14,7 @@ data class Task(
     val label: String,
     @Ignore
     val initialIsDone: Boolean = false,
-    val isDone: Boolean
+    var isDone: Boolean
 ) {
     //var isDone by mutableStateOf(initialIsDone)
 }

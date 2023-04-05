@@ -1,9 +1,6 @@
 package com.example.tasksapplication.data
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.example.tasksapplication.models.Task
 import kotlinx.coroutines.flow.Flow
 
@@ -14,6 +11,9 @@ interface TaskDao {
 
     @Delete
     fun delete(task: Task)
+
+    @Update
+    fun update(task: Task)
 
     @Query("Select * from task")
     fun readAll(): Flow<List<Task>>
