@@ -66,6 +66,7 @@ class MainActivity : ComponentActivity() {
 fun AddTask(
     onAddClick: (Task) -> Unit = {}
 ) {
+    val coroutineScope = rememberCoroutineScope()
     var label by remember {
         mutableStateOf("")
     }
@@ -77,8 +78,10 @@ fun AddTask(
         )
         
         Button(onClick = {
-            onAddClick(Task(label))
-            label = ""
+            coroutineScope.launch {
+                onAddClick(Task(label = label, isDone = false))
+                label = ""
+            }
         }) {
             Text(text = "Add")
         }
