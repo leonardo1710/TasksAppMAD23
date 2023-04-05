@@ -12,17 +12,16 @@ data class Task(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val label: String,
-    @Ignore
-    val initialIsDone: Boolean = false,
     var isDone: Boolean = false
 ) {
-    //var isDone by mutableStateOf(initialIsDone)
+    @Ignore
+    val initialIsDone: Boolean = false
 }
 
 fun getTasks(): List<Task> {
     return listOf(
-        Task(label = "read a book", isDone = false),
-        Task( label = "learn mad", isDone = false),
-        Task( label = "water the flowers", isDone = true)
+        Task(label = "read a book"),
+        Task( label = "learn mad"),
+        Task( label = "water the flowers")
     )
 }

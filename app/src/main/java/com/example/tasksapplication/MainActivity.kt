@@ -13,13 +13,17 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.tasksapplication.data.TaskDatabase
 import com.example.tasksapplication.models.Task
 import com.example.tasksapplication.models.getTasks
+import com.example.tasksapplication.repositories.TaskRepository
 import com.example.tasksapplication.ui.theme.TasksApplicationTheme
 import kotlinx.coroutines.launch
 
@@ -33,8 +37,13 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    val viewModel: TaskViewModel = viewModel()
-                    val tasksState = viewModel.tasks.collectAsState()
+
+                    val db = TaskDatabase.getDatabase(LocalContext.current)
+                    val repo = TaskRepository(db.taskDao())
+                    val factory = TaskViewModelFactory(repository = repo)
+                    val viewModel: TaskViewModel = viewModel(factory = factory)
+
+                    val tasksState by viewModel.tasks.collectAsState()
                     // create a coroutine scope for suspend functions
                     val coroutineScope = rememberCoroutineScope()
 
@@ -45,11 +54,15 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         )
+                        Divider(
+                            modifier = Modifier.padding(10.dp)
+                        )
                         TaskList(
-                            tasks = tasksState.value,
-                            onTaskChecked = {task -> coroutineScope.launch {
+                            tasks = tasksState,
+                            onCheckedChange = {task -> coroutineScope.launch {
                                     viewModel.toggleDoneState(task)
-                                }},
+                                }
+                            },
                             onTaskDone = {task -> coroutineScope.launch {
                                     viewModel.deleteTask(task)
                                 }
@@ -90,17 +103,19 @@ fun AddTask(
 
 @Composable
 fun TaskList(
-    tasks: List<Task> = remember { getTasks() },
-    onTaskChecked: (Task) -> Unit = {},
+    tasks: List<Task>,
+    onCheckedChange: (Task) -> Unit,
     onTaskDone: (Task) -> Unit = {}
 ){
 
+    //val tasksState = viewModel.tasks.
+    val coroutineScope = rememberCoroutineScope()
     LazyColumn{
         items(items = tasks){ task ->
             TaskItem(
                 taskName = task.label,
                 checked = task.isDone,
-                onCheckedChange = { onTaskChecked(task) },
+                onCheckedChange = { onCheckedChange(task) },
                 onClose = { onTaskDone(task) })
         }
     }
@@ -110,10 +125,12 @@ fun TaskList(
 fun TaskItem(
     taskName: String,
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
+    onCheckedChange: (Boolean) -> Unit = {},
     onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val checked = remember { mutableStateOf(checked) }
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -124,12 +141,33 @@ fun TaskItem(
                 .padding(start = 16.dp),
             text = taskName
         )
+
         Checkbox(
-            checked = checked,
-            onCheckedChange = onCheckedChange
+            checked = checked.value,
+            onCheckedChange = {
+                checked.value = it
+                onCheckedChange(it)
+            }
         )
+
         IconButton(onClick = onClose) {
             Icon(Icons.Filled.Close, contentDescription = "Close")
         }
     }
+}
+
+@Composable
+fun CheckedBox(
+    task: Task,
+    onCheckedChange: (Task) -> Unit
+){
+    val checked = rememberSaveable { mutableStateOf(task.isDone) }
+
+    Checkbox(
+        checked = checked.value,
+        onCheckedChange = {
+            checked.value = it
+            onCheckedChange(task)
+        }
+    )
 }
