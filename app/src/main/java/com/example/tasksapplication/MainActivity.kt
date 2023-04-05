@@ -21,6 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tasksapplication.models.Task
 import com.example.tasksapplication.models.getTasks
 import com.example.tasksapplication.ui.theme.TasksApplicationTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,18 +35,27 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val viewModel: TaskViewModel = viewModel()
                     val tasksState = viewModel.tasks.collectAsState()
+                    // create a coroutine scope for suspend functions
+                    val coroutineScope = rememberCoroutineScope()
 
                     Column {
                         AddTask(
-                            onAddClick = {task -> viewModel.addTask(task) }
+                            onAddClick = {task -> coroutineScope.launch {
+                                    viewModel.addTask(task)
+                                }
+                            }
                         )
                         TaskList(
                             tasks = tasksState.value,
-                            onTaskChecked = {task -> viewModel.toggleDoneState(task)},
-                            onTaskDone = {task -> viewModel.deleteTask(task)}
+                            onTaskChecked = {task -> coroutineScope.launch {
+                                    viewModel.toggleDoneState(task)
+                                }},
+                            onTaskDone = {task -> coroutineScope.launch {
+                                    viewModel.deleteTask(task)
+                                }
+                            }
                         )
                     }
-
                 }
             }
         }
