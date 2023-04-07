@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
                         TaskList(
                             tasks = tasksState.value,
                             onTaskChecked = {task -> viewModel.toggleDoneState(task)},
-                            onTaskDone = {task -> viewModel.deleteTask(task)}
+                            onTaskDelete = {task -> viewModel.deleteTask(task)}
                         )
                     }
 
@@ -79,7 +79,7 @@ fun AddTask(
 fun TaskList(
     tasks: List<Task> = remember { getTasks() },
     onTaskChecked: (Task) -> Unit = {},
-    onTaskDone: (Task) -> Unit = {}
+    onTaskDelete: (Task) -> Unit = {}
 ){
 
     LazyColumn{
@@ -88,7 +88,7 @@ fun TaskList(
                 taskName = task.label,
                 checked = task.isDone,
                 onCheckedChange = { onTaskChecked(task) },
-                onClose = { onTaskDone(task) })
+                onClose = { onTaskDelete(task) })
         }
     }
 }

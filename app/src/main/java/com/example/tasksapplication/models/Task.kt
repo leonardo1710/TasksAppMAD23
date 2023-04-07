@@ -14,7 +14,7 @@ data class Task(
 fun getTasks(): List<Task> {
     return listOf(
         Task("read a book", false),
-        Task( "learn mad", false),
-        Task( "water the flowers", true)
+        Task("learn mad", false),
+        Task("water the flowers", true)
     )
 }
