@@ -6,25 +6,26 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
+    // CRUD
     @Insert
     suspend fun add(task: Task)
-
-    @Delete
-    suspend fun delete(task: Task)
 
     @Update
     suspend fun update(task: Task)
 
-    @Query("Select * from task")
+    @Delete
+    suspend fun delete(task: Task)
+
+    @Query("SELECT * from task")
     fun readAll(): Flow<List<Task>>
 
     @Query("Select * from task where isDone = 1")
-    fun readAllDone(): Flow<List<Task>>
+    fun readAllChecked(): Flow<List<Task>>
 
-    @Query("Select * from task where id=:id")
-    fun getById(id: Int): Task
+    @Query("Select * from task where id=:taskId")
+    fun getTaskById(taskId: Int): Task
 
-    @Query("Delete from task")
+    @Query("DELETE from task")
     fun deleteAll()
 
 }

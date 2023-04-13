@@ -7,7 +7,7 @@ import com.example.tasksapplication.repositories.TaskRepository
 class TaskViewModelFactory(private val repository: TaskRepository): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(TaskViewModel::class.java)){
-            return TaskViewModel(repository = repository) as T
+            return TaskViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
