@@ -12,4 +12,6 @@ class TaskRepository(private val taskDao: TaskDao) {
     suspend fun update(task: Task) = taskDao.update(task)
 
     fun getAllTasks() = taskDao.readAll()
+
+    fun getAllChecked() = taskDao.readAllChecked()
 }

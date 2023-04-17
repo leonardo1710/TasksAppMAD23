@@ -17,6 +17,17 @@ data class Task(
     val categories: List<String> = listOf("house", "garden")
 ) {
     //var isDone by mutableStateOf(initialIsDone)
+    override fun equals(other: Any?): Boolean {
+        if(this === other) return true
+        if (other !is Task) return false
+
+        if(id != other.id) return false
+        if(label != other.label) return false
+        if(isDone != other.isDone) return false
+        if(categories != other.categories) return false
+
+        return true
+    }
 }
 
 fun getTasks(): List<Task> {

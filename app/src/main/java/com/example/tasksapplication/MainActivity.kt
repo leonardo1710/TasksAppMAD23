@@ -40,8 +40,9 @@ class MainActivity : ComponentActivity() {
 
                     val viewModel: TaskViewModel = viewModel(factory = InjectorUtils.provideTaskViewModelFactory(
                         LocalContext.current))
-                    val tasksState = viewModel.tasks.collectAsState()
+                    val tasksState by viewModel.tasks.collectAsState()
                     val coroutineScope = rememberCoroutineScope()
+                    val tasksChecked by viewModel.tasksChecked.collectAsState()
 
                     Column {
                         AddTask(
@@ -51,8 +52,9 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         )
+
                         TaskList(
-                            tasks = tasksState.value,
+                            tasks = tasksState,
                             onTaskChecked = {task ->
                                 coroutineScope.launch {
                                     viewModel.toggleDoneState(task)
@@ -64,6 +66,20 @@ class MainActivity : ComponentActivity() {
                                 }
                                 }
                         )
+
+
+                        Divider()
+
+                        // do comment the column to see magic happen ;)
+                        Column() {
+                            Text(text = "checked:")
+                            TaskList(
+                                tasks = tasksChecked,
+                            )
+                        }
+
+
+
                     }
 
                 }
@@ -122,9 +138,12 @@ fun TaskItem(
     modifier: Modifier = Modifier
 ) {
 
+    /*
     val isChecked = remember {
         mutableStateOf(checked)
     }
+
+     */
 
     Row(
         modifier = modifier,
@@ -137,9 +156,9 @@ fun TaskItem(
             text = taskName
         )
         Checkbox(
-            checked = isChecked.value,
+            checked = checked,
             onCheckedChange = {
-                isChecked.value = !isChecked.value
+                //isChecked.value = !isChecked.value
                 onCheckedChange(it)
             }
         )

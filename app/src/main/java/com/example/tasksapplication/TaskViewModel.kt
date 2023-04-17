@@ -15,11 +15,22 @@ class TaskViewModel(private val repository: TaskRepository): ViewModel() {
     private val _tasks = MutableStateFlow(listOf<Task>())
     val tasks: StateFlow<List<Task>> = _tasks.asStateFlow()
 
+    private val _tasksChecked = MutableStateFlow(listOf<Task>())
+    val tasksChecked: StateFlow<List<Task>> = _tasksChecked.asStateFlow()
+
     init {
         viewModelScope.launch {
             repository.getAllTasks().collect{ taskList ->
-                if(!taskList.isNullOrEmpty()){
+                if(!taskList.isEmpty()){
                     _tasks.value = taskList
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            repository.getAllChecked().collect{
+                if(!it.isEmpty()){
+                    _tasksChecked.value = it
                 }
             }
         }
