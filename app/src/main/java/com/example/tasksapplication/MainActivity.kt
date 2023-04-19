@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
                         LocalContext.current))
                     val tasksState by viewModel.tasks.collectAsState()
                     val coroutineScope = rememberCoroutineScope()
-                    val tasksChecked by viewModel.tasksChecked.collectAsState()
+                    // val tasksChecked by viewModel.tasksChecked.collectAsState()
 
                     Column {
                         AddTask(
@@ -67,9 +67,9 @@ class MainActivity : ComponentActivity() {
                                 }
                         )
 
-
                         Divider()
 
+                        /*
                         // do comment the column to see magic happen ;)
                         Column() {
                             Text(text = "checked:")
@@ -78,8 +78,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-
-
+                         */
                     }
 
                 }
@@ -138,13 +137,6 @@ fun TaskItem(
     modifier: Modifier = Modifier
 ) {
 
-    /*
-    val isChecked = remember {
-        mutableStateOf(checked)
-    }
-
-     */
-
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -158,7 +150,6 @@ fun TaskItem(
         Checkbox(
             checked = checked,
             onCheckedChange = {
-                //isChecked.value = !isChecked.value
                 onCheckedChange(it)
             }
         )

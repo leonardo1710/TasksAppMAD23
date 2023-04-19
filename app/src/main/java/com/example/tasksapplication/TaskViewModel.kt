@@ -21,17 +21,7 @@ class TaskViewModel(private val repository: TaskRepository): ViewModel() {
     init {
         viewModelScope.launch {
             repository.getAllTasks().collect{ taskList ->
-                if(!taskList.isEmpty()){
-                    _tasks.value = taskList
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            repository.getAllChecked().collect{
-                if(!it.isEmpty()){
-                    _tasksChecked.value = it
-                }
+                _tasks.value = taskList
             }
         }
     }

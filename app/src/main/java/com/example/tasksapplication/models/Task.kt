@@ -1,5 +1,6 @@
 package com.example.tasksapplication.models
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,6 +17,9 @@ data class Task(
     var isDone: Boolean = false,
     val categories: List<String> = listOf("house", "garden")
 ) {
+    override fun equals(other: Any?): Boolean {
+        return super.equals(other)
+    }
     //var isDone by mutableStateOf(initialIsDone)
 }
 
